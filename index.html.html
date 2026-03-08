@@ -35,13 +35,11 @@
   body {
     font-family:'Plus Jakarta Sans',sans-serif;
     background:var(--bg); color:var(--text);
-    overflow-x:hidden; cursor:none;
+    overflow-x:hidden;
     -webkit-font-smoothing:antialiased;
   }
 
-  /* CURSOR */
-  .cursor { position:fixed; width:10px; height:10px; background:var(--accent); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:transform 0.15s,opacity 0.15s; }
-  .cursor-ring { position:fixed; width:32px; height:32px; border:1.5px solid rgba(59,111,212,0.35); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width 0.3s,height 0.3s,opacity 0.3s; }
+
 
   /* SUBTLE DOTS BG */
   .dots-bg {
@@ -64,12 +62,12 @@
   .logo-mark svg { width:16px; height:16px; fill:white; }
   .nav-badge { background:var(--accent-l); border:1px solid rgba(59,111,212,0.2); color:var(--accent); font-size:11px; font-weight:600; padding:4px 12px; border-radius:20px; letter-spacing:0.8px; }
   .nav-right { display:flex; align-items:center; gap:14px; }
-  .nav-cta { background:var(--accent); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; padding:10px 22px; border-radius:9px; border:none; cursor:none; transition:background 0.2s,transform 0.2s,box-shadow 0.2s; }
+  .nav-cta { background:var(--accent); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; padding:10px 22px; border-radius:9px; border:none; cursor:pointer; transition:background 0.2s,transform 0.2s,box-shadow 0.2s; }
   .nav-cta:hover { background:var(--accent-h); transform:translateY(-1px); box-shadow:0 6px 20px rgba(59,111,212,0.25); }
 
   /* LANG TOGGLE */
   .lang-toggle { display:flex; align-items:center; gap:2px; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:3px; position:relative; }
-  .lang-btn { position:relative; z-index:1; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; padding:5px 13px; border-radius:7px; border:none; background:transparent; color:var(--muted); cursor:none; transition:color 0.2s; letter-spacing:0.5px; }
+  .lang-btn { position:relative; z-index:1; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; padding:5px 13px; border-radius:7px; border:none; background:transparent; color:var(--muted); cursor:pointer; transition:color 0.2s; letter-spacing:0.5px; }
   .lang-btn.active { color:white; }
   .lang-slider { position:absolute; top:3px; left:3px; height:calc(100% - 6px); border-radius:7px; background:var(--accent); transition:transform 0.25s cubic-bezier(0.4,0,0.2,1),width 0.25s; pointer-events:none; }
 
@@ -89,7 +87,7 @@
   .hero-input { flex:1; background:var(--surface); border:1.5px solid var(--border2); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; padding:14px 18px; border-radius:10px; outline:none; transition:border-color 0.2s,box-shadow 0.2s; box-shadow:var(--shadow); }
   .hero-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(59,111,212,0.1); }
   .hero-input::placeholder { color:var(--muted2); }
-  .hero-btn { background:var(--accent); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; padding:14px 24px; border-radius:10px; border:none; cursor:none; white-space:nowrap; transition:background 0.2s,transform 0.2s,box-shadow 0.2s; }
+  .hero-btn { background:var(--accent); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; padding:14px 24px; border-radius:10px; border:none; cursor:pointer; white-space:nowrap; transition:background 0.2s,transform 0.2s,box-shadow 0.2s; }
   .hero-btn:hover { background:var(--accent-h); transform:translateY(-2px); box-shadow:0 10px 28px rgba(59,111,212,0.25); }
 
   .social-proof { display:flex; align-items:center; gap:12px; margin-top:20px; font-size:13px; color:var(--muted); }
@@ -175,7 +173,7 @@
   .p-feats li { display:flex; align-items:center; gap:9px; font-size:13px; color:var(--muted); padding:8px 0; border-bottom:1px solid var(--border); font-weight:400; }
   .p-feats li:last-child { border-bottom:none; }
   .chk { color:var(--green); font-size:14px; }
-  .p-btn { width:100%; padding:13px; border-radius:10px; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; cursor:none; transition:all 0.2s; border:none; }
+  .p-btn { width:100%; padding:13px; border-radius:10px; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s; border:none; }
   .p-btn-out { background:transparent; color:var(--text); border:1.5px solid var(--border2); }
   .p-btn-out:hover { border-color:var(--accent); color:var(--accent); }
   .p-btn-fill { background:var(--accent); color:#fff; }
@@ -189,7 +187,7 @@
   .cta-input { flex:1; background:var(--surface); border:1.5px solid var(--border2); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; padding:15px 18px; border-radius:10px; outline:none; transition:border-color 0.2s; box-shadow:var(--shadow); }
   .cta-input:focus { border-color:var(--accent); }
   .cta-input::placeholder { color:var(--muted2); }
-  .cta-btn { background:var(--accent); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; padding:15px 26px; border-radius:10px; border:none; cursor:none; transition:all 0.2s; }
+  .cta-btn { background:var(--accent); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; padding:15px 26px; border-radius:10px; border:none; cursor:pointer; transition:all 0.2s; }
   .cta-btn:hover { background:var(--accent-h); transform:translateY(-2px); box-shadow:0 10px 28px rgba(59,111,212,0.25); }
   .cta-note { font-size:12px; color:var(--muted2); font-family:'JetBrains Mono',monospace; }
 
@@ -209,13 +207,13 @@
   .modal-overlay.open { display:flex; }
   .modal { background:var(--surface); border:1.5px solid var(--border); border-radius:20px; padding:40px; max-width:480px; width:90%; box-shadow:0 32px 80px rgba(26,34,54,0.2); animation:slideUp 0.35s cubic-bezier(0.175,0.885,0.32,1.275); }
   @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
-  .modal-close { position:absolute; top:16px; right:16px; background:var(--bg2); border:none; border-radius:50%; width:32px; height:32px; cursor:none; color:var(--muted); font-size:18px; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
+  .modal-close { position:absolute; top:16px; right:16px; background:var(--bg2); border:none; border-radius:50%; width:32px; height:32px; cursor:pointer; color:var(--muted); font-size:18px; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
   .modal-close:hover { background:var(--border); }
   .modal h3 { font-size:22px; font-weight:800; letter-spacing:-0.5px; margin-bottom:8px; }
   .modal p { font-size:14px; color:var(--muted); margin-bottom:24px; line-height:1.6; }
   .modal-input { width:100%; background:var(--bg); border:1.5px solid var(--border2); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; padding:13px 16px; border-radius:10px; outline:none; margin-bottom:12px; transition:border-color 0.2s; }
   .modal-input:focus { border-color:var(--accent); }
-  .modal-btn { width:100%; background:var(--accent); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; padding:14px; border-radius:10px; border:none; cursor:none; transition:all 0.2s; }
+  .modal-btn { width:100%; background:var(--accent); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; padding:14px; border-radius:10px; border:none; cursor:pointer; transition:all 0.2s; }
   .modal-btn:hover { background:var(--accent-h); }
   .modal-note { font-size:11px; color:var(--muted2); text-align:center; margin-top:10px; font-family:'JetBrains Mono',monospace; }
   .modal-success { text-align:center; display:none; }
@@ -246,8 +244,6 @@
 </head>
 <body>
 
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cring"></div>
 <div class="dots-bg"></div>
 
 <!-- MODAL NOTIFICATION -->
@@ -491,16 +487,6 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CURSOR ──
-const cur=document.getElementById('cursor'),ring=document.getElementById('cring');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
-(function animR(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animR);})();
-document.querySelectorAll('button,a,input').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(2.5)';ring.style.width='56px';ring.style.height='56px';ring.style.opacity='0.5';});
-  el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';ring.style.width='32px';ring.style.height='32px';ring.style.opacity='1';});
-});
-
 // ── SCROLL ANIMATIONS ──
 const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.1});
 document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
