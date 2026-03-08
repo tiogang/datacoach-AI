@@ -306,7 +306,7 @@
       <div class="av" style="background:linear-gradient(135deg,#2DA870,#6BD4A0)">M</div>
       <div class="av" style="background:linear-gradient(135deg,#E07B39,#F0B96B)">S</div>
     </div>
-    <span id="proofTxt">Join <strong style="color:var(--text)">247 students</strong> already on the waitlist</span>
+    <span id="proofTxt">Sois parmi les premiers à rejoindre la liste d'attente</span>
   </div>
 </section>
 
@@ -580,8 +580,10 @@ function submitWaitlist(){
   }).catch(()=>{});
 
   // ── UPDATE UI ──
-  const total = 247 + signups.length;
-  document.getElementById('proofTxt').innerHTML = `${t.heroProofJoin} <strong style="color:var(--text)">${total} ${t.heroProofStudents}</strong> ${t.heroProof}`;
+  const total = signups.length;
+  if(total > 0){
+    document.getElementById('proofTxt').innerHTML = `<strong style="color:var(--text)">${total}</strong> ${t.heroProofStudents} ${t.heroProof}`;
+  }
 
   // Show success in modal
   document.getElementById('modalForm').style.display='none';
@@ -621,7 +623,7 @@ const translations={
     eyebrow:'The AI Coach Built for Data Scientists',
     heroLine1:'Learn Data Science', heroItalic:'10× Faster',
     heroSub:'Your personal AI coach that diagnoses your level, builds your roadmap, reviews your code, and guides every project — available 24/7.',
-    heroCta:'Get Early Access →', heroProofJoin:'Join', heroProofStudents:'students', heroProof:'already on the waitlist',
+    heroCta:'Get Early Access →', heroProofStudents:'people', heroProof:'have already joined the waitlist',
     s1l:'Faster skill acquisition vs solo learning', s2l:'AI coach available, no scheduling needed', s3l:'vs $10,000+ bootcamp fees', s4l:'Average time to job-ready level',
     tag1:'— The Problem', ptitle1:'Learning data science alone', ptitle2:'is broken.',
     p1t:'No clear roadmap', p1d:'Everyone tells you something different. "Start with Python." "No, math first." "Just do Kaggle." You waste months going in circles.',
@@ -665,7 +667,7 @@ const translations={
     eyebrow:'Le Coach IA pour les Data Scientists',
     heroLine1:'Apprends la Data Science', heroItalic:'10× Plus Vite',
     heroSub:'Ton coach IA personnel qui diagnostique ton niveau, construit ta roadmap, corrige ton code et guide chaque projet — disponible 24h/24.',
-    heroCta:'Accès Anticipé →', heroProofJoin:'Rejoins', heroProofStudents:'étudiants', heroProof:"déjà sur la liste d'attente",
+    heroCta:'Accès Anticipé →', heroProofStudents:'personnes', heroProof:"ont déjà rejoint la liste d'attente",
     s1l:"Acquisition de compétences plus rapide vs l'apprentissage solo", s2l:'Coach IA disponible, sans prise de RDV', s3l:'vs 10 000€+ de frais de bootcamp', s4l:"Durée moyenne pour être prêt à l'emploi",
     tag1:'— Le Problème', ptitle1:'Apprendre la data science seul', ptitle2:"c'est cassé.",
     p1t:'Aucune roadmap claire', p1d:'Tout le monde te dit quelque chose de différent. "Commence par Python." "Non, les maths." "Fais Kaggle." Tu perds des mois à tourner en rond.',
@@ -725,8 +727,12 @@ function setLang(lang){
   set('heroSub',t.heroSub); set('heroBtnEl',t.heroCta);
   document.querySelectorAll('input[type=email]').forEach(i=>i.placeholder=t.emailPh);
   document.querySelectorAll('input[type=text]').forEach(i=>i.placeholder=t.namePh);
-  const total=247+signups.length;
-  setHTML('proofTxt',`${t.heroProofJoin} <strong style="color:var(--text)">${total} ${t.heroProofStudents}</strong> ${t.heroProof}`);
+  const total=signups.length;
+  if(total > 0){
+    setHTML('proofTxt',`<strong style="color:var(--text)">${total} ${t.heroProofStudents}</strong> ${t.heroProof}`);
+  } else {
+    document.getElementById('proofTxt').textContent = isEN ? "Be among the first to join the waitlist" : "Sois parmi les premiers à rejoindre la liste d'attente";
+  }
   set('s1l',t.s1l); set('s2l',t.s2l); set('s3l',t.s3l); set('s4l',t.s4l);
   set('tag1',t.tag1);
   setHTML('ptitle',`${t.ptitle1}<br/><span style="color:var(--muted)">${t.ptitle2}</span>`);
