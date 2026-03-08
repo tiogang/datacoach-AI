@@ -567,14 +567,14 @@ function submitWaitlist(){
   }
 
   // ── Also log to Google Sheets via Apps Script ──
-  // Replace YOUR_APPS_SCRIPT_URL below with your deployed Google Apps Script URL
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0zvaIvqbufPqgL0_SC_yrX5iTp5ced3s79jMLH5E_HWYjoViJPnckIdC7qAl7q88j/exec';
   if(APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL'){
-    fetch(APPS_SCRIPT_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email, name:name||'', lang:currentLang, timestamp:entry.timestamp})
-    }).catch(()=>{});
+    const fd = new FormData();
+    fd.append('timestamp', entry.timestamp);
+    fd.append('email', email);
+    fd.append('name', name||'');
+    fd.append('lang', currentLang);
+    fetch(APPS_SCRIPT_URL, { method:'POST', mode:'no-cors', body:fd }).catch(()=>{});
   }
 
   // ── UPDATE UI ──
