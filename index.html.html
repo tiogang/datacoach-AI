@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DataCoach AI — Your Personal Data Science Coach</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:       #F7F9FC;
+    --bg2:      #EEF2F8;
+    --bg3:      #E5EAF3;
+    --surface:  #FFFFFF;
+    --border:   #DDE3EE;
+    --border2:  #C5CFE4;
+    --accent:   #3B6FD4;
+    --accent-l: #EBF0FB;
+    --accent-h: #2A56B8;
+    --blue-mid: #6B9BF0;
+    --green:    #2DA870;
+    --green-l:  #E8F7F1;
+    --orange:   #E07B39;
+    --orange-l: #FDF0E6;
+    --purple:   #7B61C4;
+    --purple-l: #F0EDFA;
+    --text:     #1A2236;
+    --muted:    #6B7A99;
+    --muted2:   #9AAABF;
+    --card:     #FFFFFF;
+    --shadow:   0 2px 20px rgba(59,111,212,0.08);
+    --shadow-l: 0 8px 40px rgba(59,111,212,0.12);
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family:'Plus Jakarta Sans',sans-serif;
+    background:var(--bg); color:var(--text);
+    overflow-x:hidden; cursor:none;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* CURSOR */
+  .cursor { position:fixed; width:10px; height:10px; background:var(--accent); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:transform 0.15s,opacity 0.15s; }
+  .cursor-ring { position:fixed; width:32px; height:32px; border:1.5px solid rgba(59,111,212,0.35); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width 0.3s,height 0.3s,opacity 0.3s; }
+
+  /* SUBTLE DOTS BG */
+  .dots-bg {
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image: radial-gradient(circle, rgba(59,111,212,0.06) 1px, transparent 1px);
+    background-size:32px 32px;
+    mask-image:radial-gradient(ellipse 90% 60% at 50% 0%, black 20%, transparent 80%);
+  }
+
+  /* NAV */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    padding:0 48px; height:68px;
+    display:flex; align-items:center; justify-content:space-between;
+    background:rgba(247,249,252,0.92); backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);
+  }
+  .logo { display:flex; align-items:center; gap:9px; font-size:17px; font-weight:800; color:var(--text); letter-spacing:-0.4px; }
+  .logo-mark { width:28px; height:28px; background:var(--accent); border-radius:8px; display:flex; align-items:center; justify-content:center; }
+  .logo-mark svg { width:16px; height:16px; fill:white; }
+  .nav-badge { background:var(--accent-l); border:1px solid rgba(59,111,212,0.2); color:var(--accent); font-size:11px; font-weight:600; padding:4px 12px; border-radius:20px; letter-spacing:0.8px; }
+  .nav-right { display:flex; align-items:center; gap:14px; }
+  .nav-cta { background:var(--accent); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; padding:10px 22px; border-radius:9px; border:none; cursor:none; transition:background 0.2s,transform 0.2s,box-shadow 0.2s; }
+  .nav-cta:hover { background:var(--accent-h); transform:translateY(-1px); box-shadow:0 6px 20px rgba(59,111,212,0.25); }
+
+  /* LANG TOGGLE */
+  .lang-toggle { display:flex; align-items:center; gap:2px; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:3px; position:relative; }
+  .lang-btn { position:relative; z-index:1; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; padding:5px 13px; border-radius:7px; border:none; background:transparent; color:var(--muted); cursor:none; transition:color 0.2s; letter-spacing:0.5px; }
+  .lang-btn.active { color:white; }
+  .lang-slider { position:absolute; top:3px; left:3px; height:calc(100% - 6px); border-radius:7px; background:var(--accent); transition:transform 0.25s cubic-bezier(0.4,0,0.2,1),width 0.25s; pointer-events:none; }
+
+  /* HERO */
+  .hero { position:relative; z-index:2; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:120px 48px 80px; text-align:center; }
+  .hero-blob { position:absolute; top:-100px; left:50%; transform:translateX(-50%); width:800px; height:500px; background:radial-gradient(ellipse, rgba(59,111,212,0.08) 0%, rgba(107,155,240,0.04) 50%, transparent 70%); pointer-events:none; border-radius:50%; }
+
+  .eyebrow { display:inline-flex; align-items:center; gap:8px; background:var(--accent-l); border:1px solid rgba(59,111,212,0.18); color:var(--accent); font-size:12px; font-weight:600; padding:6px 16px; border-radius:20px; margin-bottom:28px; letter-spacing:0.3px; }
+  .eyebrow-dot { width:6px; height:6px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
+
+  .hero-title { font-size:clamp(44px,7vw,82px); font-weight:800; line-height:1.05; letter-spacing:-3px; color:var(--text); margin-bottom:10px; }
+  .hero-italic { font-family:'Lora',serif; font-style:italic; font-weight:600; color:var(--accent); letter-spacing:-2px; }
+  .hero-sub { font-size:clamp(15px,2vw,18px); color:var(--muted); max-width:520px; line-height:1.7; margin:18px auto 36px; font-weight:400; }
+
+  .hero-form { display:flex; gap:10px; max-width:460px; width:100%; }
+  .hero-input { flex:1; background:var(--surface); border:1.5px solid var(--border2); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; padding:14px 18px; border-radius:10px; outline:none; transition:border-color 0.2s,box-shadow 0.2s; box-shadow:var(--shadow); }
+  .hero-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(59,111,212,0.1); }
+  .hero-input::placeholder { color:var(--muted2); }
+  .hero-btn { background:var(--accent); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; padding:14px 24px; border-radius:10px; border:none; cursor:none; white-space:nowrap; transition:background 0.2s,transform 0.2s,box-shadow 0.2s; }
+  .hero-btn:hover { background:var(--accent-h); transform:translateY(-2px); box-shadow:0 10px 28px rgba(59,111,212,0.25); }
+
+  .social-proof { display:flex; align-items:center; gap:12px; margin-top:20px; font-size:13px; color:var(--muted); }
+  .avatars { display:flex; }
+  .av { width:26px; height:26px; border-radius:50%; border:2px solid var(--bg); margin-left:-7px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:white; }
+  .av:first-child { margin-left:0; }
+
+  /* TICKER */
+  .ticker-wrap { position:relative; z-index:2; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--surface); overflow:hidden; padding:12px 0; }
+  .ticker { display:flex; gap:56px; width:max-content; animation:ticker 32s linear infinite; }
+  @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .t-item { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); white-space:nowrap; font-weight:500; }
+  .t-dot { width:4px; height:4px; background:var(--accent); border-radius:50%; opacity:0.5; }
+
+  /* STATS */
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); position:relative; z-index:2; background:var(--surface); border-bottom:1px solid var(--border); }
+  .stat { padding:36px 32px; border-right:1px solid var(--border); transition:background 0.2s; }
+  .stat:last-child { border-right:none; }
+  .stat:hover { background:var(--accent-l); }
+  .stat-num { font-size:42px; font-weight:800; letter-spacing:-2px; line-height:1; margin-bottom:6px; }
+  .stat-lbl { font-size:13px; color:var(--muted); font-weight:400; line-height:1.4; }
+
+  /* SECTIONS */
+  .section { position:relative; z-index:2; padding:96px 48px; max-width:1200px; margin:0 auto; }
+  .section-alt { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+  .section-alt .section { max-width:1200px; }
+  .stag { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:3px; text-transform:uppercase; margin-bottom:16px; }
+  .stitle { font-size:clamp(28px,4.5vw,46px); font-weight:800; line-height:1.1; letter-spacing:-1.5px; margin-bottom:56px; }
+
+  /* PAIN CARDS */
+  .pain-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .pain-card { background:var(--surface); border:1.5px solid var(--border); border-radius:16px; padding:28px; transition:border-color 0.25s,transform 0.25s,box-shadow 0.25s; }
+  .pain-card:hover { border-color:var(--accent); transform:translateY(-3px); box-shadow:var(--shadow-l); }
+  .pain-icon { font-size:24px; margin-bottom:14px; }
+  .pain-title { font-size:15px; font-weight:700; margin-bottom:8px; color:var(--text); }
+  .pain-text { font-size:13px; color:var(--muted); line-height:1.65; font-weight:400; }
+
+  /* FEATURES */
+  .feat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0; border:1.5px solid var(--border); border-radius:20px; overflow:hidden; box-shadow:var(--shadow); }
+  .feat-card { background:var(--surface); padding:36px 28px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); transition:background 0.2s; }
+  .feat-card:nth-child(3n) { border-right:none; }
+  .feat-card:nth-child(4),.feat-card:nth-child(5),.feat-card:nth-child(6) { border-bottom:none; }
+  .feat-card:hover { background:var(--accent-l); }
+  .feat-num { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted2); letter-spacing:2px; margin-bottom:20px; }
+  .feat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:16px; }
+  .feat-title { font-size:17px; font-weight:700; margin-bottom:10px; letter-spacing:-0.3px; }
+  .feat-desc { font-size:13px; color:var(--muted); line-height:1.65; font-weight:400; }
+  .feat-tag { display:inline-block; margin-top:16px; font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 9px; border-radius:4px; letter-spacing:1px; font-weight:500; }
+
+  /* STEPS */
+  .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:0; position:relative; margin-top:56px; }
+  .steps::before { content:''; position:absolute; top:27px; left:12%; right:12%; height:1px; background:linear-gradient(90deg, var(--border), var(--accent), var(--blue-mid), var(--border)); }
+  .step { text-align:center; padding:0 16px; }
+  .step-num { width:54px; height:54px; border-radius:50%; background:var(--surface); border:2px solid var(--accent); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:15px; color:var(--accent); margin:0 auto 18px; box-shadow:0 0 0 6px var(--accent-l); position:relative; z-index:1; }
+  .step-title { font-size:15px; font-weight:700; margin-bottom:8px; }
+  .step-desc { font-size:13px; color:var(--muted); line-height:1.6; font-weight:400; }
+
+  /* TERMINAL */
+  .terminal { background:var(--text); border-radius:16px; overflow:hidden; box-shadow:0 32px 64px rgba(26,34,54,0.15); margin-top:56px; }
+  .t-bar { background:#232D42; padding:14px 20px; display:flex; align-items:center; gap:7px; }
+  .t-dot2 { width:11px; height:11px; border-radius:50%; }
+  .t-label { margin-left:10px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#6B7A99; }
+  .t-body { padding:28px 32px; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.9; }
+  .t-prompt { color:#6B9BF0; }
+  .t-cmd { color:#E8ECFF; }
+  .t-out { color:#8896B4; padding-left:18px; }
+  .t-acc { color:#6BD4C0; }
+  .t-warn { color:#F0B96B; }
+  .t-purp { color:#B48AF0; }
+  .t-cur { display:inline-block; width:7px; height:14px; background:#6B9BF0; animation:blink 1s infinite; vertical-align:middle; margin-left:2px; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* PRICING */
+  .price-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:56px; }
+  .price-card { background:var(--surface); border:1.5px solid var(--border); border-radius:20px; padding:36px 28px; transition:transform 0.25s,box-shadow 0.25s; position:relative; }
+  .price-card:hover { transform:translateY(-5px); box-shadow:var(--shadow-l); }
+  .price-card.feat { border-color:var(--accent); box-shadow:0 0 0 4px rgba(59,111,212,0.08); }
+  .price-badge { position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:var(--accent); color:#fff; font-size:10px; font-weight:700; padding:4px 14px; border-radius:20px; letter-spacing:0.8px; white-space:nowrap; }
+  .p-name { font-size:12px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+  .p-price { font-size:48px; font-weight:800; letter-spacing:-2.5px; line-height:1; margin-bottom:4px; }
+  .p-period { font-size:13px; color:var(--muted); margin-bottom:24px; }
+  .p-feats { list-style:none; margin-bottom:28px; }
+  .p-feats li { display:flex; align-items:center; gap:9px; font-size:13px; color:var(--muted); padding:8px 0; border-bottom:1px solid var(--border); font-weight:400; }
+  .p-feats li:last-child { border-bottom:none; }
+  .chk { color:var(--green); font-size:14px; }
+  .p-btn { width:100%; padding:13px; border-radius:10px; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; cursor:none; transition:all 0.2s; border:none; }
+  .p-btn-out { background:transparent; color:var(--text); border:1.5px solid var(--border2); }
+  .p-btn-out:hover { border-color:var(--accent); color:var(--accent); }
+  .p-btn-fill { background:var(--accent); color:#fff; }
+  .p-btn-fill:hover { background:var(--accent-h); box-shadow:0 6px 20px rgba(59,111,212,0.25); }
+
+  /* CTA */
+  .cta-wrap { text-align:center; padding:100px 48px; border-top:1px solid var(--border); background:linear-gradient(180deg, var(--bg) 0%, var(--accent-l) 100%); position:relative; z-index:2; }
+  .cta-title { font-size:clamp(36px,5.5vw,64px); font-weight:800; letter-spacing:-2.5px; line-height:1.05; margin-bottom:16px; }
+  .cta-sub { font-size:17px; color:var(--muted); margin-bottom:40px; font-weight:400; }
+  .cta-form { display:flex; gap:10px; justify-content:center; max-width:420px; margin:0 auto 16px; }
+  .cta-input { flex:1; background:var(--surface); border:1.5px solid var(--border2); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; padding:15px 18px; border-radius:10px; outline:none; transition:border-color 0.2s; box-shadow:var(--shadow); }
+  .cta-input:focus { border-color:var(--accent); }
+  .cta-input::placeholder { color:var(--muted2); }
+  .cta-btn { background:var(--accent); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; padding:15px 26px; border-radius:10px; border:none; cursor:none; transition:all 0.2s; }
+  .cta-btn:hover { background:var(--accent-h); transform:translateY(-2px); box-shadow:0 10px 28px rgba(59,111,212,0.25); }
+  .cta-note { font-size:12px; color:var(--muted2); font-family:'JetBrains Mono',monospace; }
+
+  /* FOOTER */
+  footer { position:relative; z-index:2; border-top:1px solid var(--border); padding:32px 48px; display:flex; align-items:center; justify-content:space-between; background:var(--surface); }
+  .foot-l { font-size:12px; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+  .foot-links { display:flex; gap:28px; }
+  .foot-links a { font-size:13px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+  .foot-links a:hover { color:var(--accent); }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:28px; right:28px; z-index:1000; background:var(--green); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:600; padding:14px 22px; border-radius:12px; transform:translateY(100px); opacity:0; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); box-shadow:0 8px 32px rgba(45,168,112,0.3); }
+  .toast.show { transform:translateY(0); opacity:1; }
+
+  /* NOTIFICATION MODAL */
+  .modal-overlay { position:fixed; inset:0; background:rgba(26,34,54,0.4); backdrop-filter:blur(4px); z-index:200; display:none; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--surface); border:1.5px solid var(--border); border-radius:20px; padding:40px; max-width:480px; width:90%; box-shadow:0 32px 80px rgba(26,34,54,0.2); animation:slideUp 0.35s cubic-bezier(0.175,0.885,0.32,1.275); }
+  @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+  .modal-close { position:absolute; top:16px; right:16px; background:var(--bg2); border:none; border-radius:50%; width:32px; height:32px; cursor:none; color:var(--muted); font-size:18px; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
+  .modal-close:hover { background:var(--border); }
+  .modal h3 { font-size:22px; font-weight:800; letter-spacing:-0.5px; margin-bottom:8px; }
+  .modal p { font-size:14px; color:var(--muted); margin-bottom:24px; line-height:1.6; }
+  .modal-input { width:100%; background:var(--bg); border:1.5px solid var(--border2); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; padding:13px 16px; border-radius:10px; outline:none; margin-bottom:12px; transition:border-color 0.2s; }
+  .modal-input:focus { border-color:var(--accent); }
+  .modal-btn { width:100%; background:var(--accent); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; padding:14px; border-radius:10px; border:none; cursor:none; transition:all 0.2s; }
+  .modal-btn:hover { background:var(--accent-h); }
+  .modal-note { font-size:11px; color:var(--muted2); text-align:center; margin-top:10px; font-family:'JetBrains Mono',monospace; }
+  .modal-success { text-align:center; display:none; }
+  .modal-success .success-icon { font-size:48px; margin-bottom:12px; }
+  .modal-success h3 { font-size:20px; font-weight:800; margin-bottom:8px; }
+  .modal-success p { font-size:14px; color:var(--muted); }
+
+  /* ANIMATIONS */
+  .fade-in { opacity:0; transform:translateY(24px); transition:opacity 0.65s ease,transform 0.65s ease; }
+  .fade-in.visible { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){
+    nav{padding:0 20px;} .nav-badge{display:none;}
+    .hero{padding:100px 20px 60px;}
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .stat{border-bottom:1px solid var(--border);}
+    .pain-grid,.feat-grid,.price-grid{grid-template-columns:1fr;}
+    .feat-card{border-right:none!important;border-bottom:1px solid var(--border)!important;}
+    .steps{grid-template-columns:repeat(2,1fr);gap:36px;}
+    .steps::before{display:none;}
+    .hero-form,.cta-form{flex-direction:column;}
+    .section{padding:60px 20px;}
+    footer{flex-direction:column;gap:16px;text-align:center;}
+    .foot-links{flex-wrap:wrap;justify-content:center;gap:14px;}
+    .cta-wrap{padding:60px 20px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cring"></div>
+<div class="dots-bg"></div>
+
+<!-- MODAL NOTIFICATION -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModalBtn()">✕</button>
+    <div id="modalForm">
+      <div style="font-size:32px;margin-bottom:12px">🔔</div>
+      <h3 id="modalTitle">Get notified when we launch</h3>
+      <p id="modalDesc">Enter your email and we'll send you a confirmation right away — plus an alert the day we go live.</p>
+      <input class="modal-input" type="email" id="modalEmail" placeholder="your@email.com"/>
+      <input class="modal-input" type="text" id="modalName" placeholder="Your first name (optional)"/>
+      <button class="modal-btn" id="modalBtn" onclick="submitWaitlist()">Notify Me on Launch →</button>
+      <div class="modal-note" id="modalNote">No spam · Unsubscribe anytime · We respect your privacy</div>
+    </div>
+    <div class="modal-success" id="modalSuccess">
+      <div class="success-icon">🎉</div>
+      <h3 id="successTitle">You're on the list!</h3>
+      <p id="successMsg">Check your inbox — a confirmation email is on its way. We'll ping you the moment DataCoach AI goes live.</p>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16"><path d="M3 12 L8 4 L13 12 M5.5 9 L10.5 9"/></svg>
+    </div>
+    DataCoach<span style="color:var(--accent)">AI</span>
+  </div>
+  <span class="nav-badge" id="navBadge">BETA · COMING SOON</span>
+  <div class="nav-right">
+    <div class="lang-toggle" id="langToggle">
+      <div class="lang-slider" id="langSlider"></div>
+      <button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="btnFR" onclick="setLang('fr')">FR</button>
+    </div>
+    <button class="nav-cta" id="navCta" onclick="openModal()">Join Waitlist</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-blob"></div>
+  <div class="eyebrow" id="eyebrow"><div class="eyebrow-dot"></div><span id="eyebrowTxt">The AI Coach Built for Data Scientists</span></div>
+  <h1 class="hero-title" id="heroTitle">
+    Learn Data Science<br/>
+    <span class="hero-italic" id="heroItalic">10× Faster</span>
+  </h1>
+  <p class="hero-sub" id="heroSub">Your personal AI coach that diagnoses your level, builds your roadmap, reviews your code, and guides every project — available 24/7.</p>
+  <div class="hero-form">
+    <input class="hero-input" type="email" id="heroEmail" placeholder="your@email.com"/>
+    <button class="hero-btn" id="heroBtnEl" onclick="quickJoin()">Get Early Access →</button>
+  </div>
+  <div class="social-proof">
+    <div class="avatars">
+      <div class="av" style="background:linear-gradient(135deg,#3B6FD4,#6B9BF0)">A</div>
+      <div class="av" style="background:linear-gradient(135deg,#7B61C4,#B48AF0)">K</div>
+      <div class="av" style="background:linear-gradient(135deg,#2DA870,#6BD4A0)">M</div>
+      <div class="av" style="background:linear-gradient(135deg,#E07B39,#F0B96B)">S</div>
+    </div>
+    <span id="proofTxt">Join <strong style="color:var(--text)">247 students</strong> already on the waitlist</span>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <div class="t-item"><div class="t-dot"></div>Machine Learning</div>
+    <div class="t-item"><div class="t-dot"></div>Deep Learning</div>
+    <div class="t-item"><div class="t-dot"></div>Python Coaching</div>
+    <div class="t-item"><div class="t-dot"></div>Project Reviews</div>
+    <div class="t-item"><div class="t-dot"></div>NLP & Vision</div>
+    <div class="t-item"><div class="t-dot"></div>Career Roadmap</div>
+    <div class="t-item"><div class="t-dot"></div>Code Feedback</div>
+    <div class="t-item"><div class="t-dot"></div>MLOps</div>
+    <div class="t-item"><div class="t-dot"></div>Interview Prep</div>
+    <div class="t-item"><div class="t-dot"></div>Real Projects</div>
+    <div class="t-item"><div class="t-dot"></div>Machine Learning</div>
+    <div class="t-item"><div class="t-dot"></div>Deep Learning</div>
+    <div class="t-item"><div class="t-dot"></div>Python Coaching</div>
+    <div class="t-item"><div class="t-dot"></div>Project Reviews</div>
+    <div class="t-item"><div class="t-dot"></div>NLP & Vision</div>
+    <div class="t-item"><div class="t-dot"></div>Career Roadmap</div>
+    <div class="t-item"><div class="t-dot"></div>Code Feedback</div>
+    <div class="t-item"><div class="t-dot"></div>MLOps</div>
+    <div class="t-item"><div class="t-dot"></div>Interview Prep</div>
+    <div class="t-item"><div class="t-dot"></div>Real Projects</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<section class="stats fade-in">
+  <div class="stat"><div class="stat-num" style="color:var(--accent)" id="s1n">10×</div><div class="stat-lbl" id="s1l">Faster skill acquisition vs solo learning</div></div>
+  <div class="stat"><div class="stat-num" style="color:var(--green)" id="s2n">24/7</div><div class="stat-lbl" id="s2l">AI coach available, no scheduling needed</div></div>
+  <div class="stat"><div class="stat-num" style="color:var(--orange)" id="s3n">$0</div><div class="stat-lbl" id="s3l">vs $10,000+ bootcamp fees</div></div>
+  <div class="stat"><div class="stat-num" style="color:var(--purple)" id="s4n">6mo</div><div class="stat-lbl" id="s4l">Average time to job-ready level</div></div>
+</section>
+
+<!-- PROBLEM -->
+<div><div class="section">
+  <div class="stag fade-in" id="tag1">— The Problem</div>
+  <h2 class="stitle fade-in" id="ptitle">Learning data science alone<br/><span style="color:var(--muted)">is broken.</span></h2>
+  <div class="pain-grid">
+    <div class="pain-card fade-in"><div class="pain-icon">🗺️</div><div class="pain-title" id="p1t">No clear roadmap</div><div class="pain-text" id="p1d">Everyone tells you something different. "Start with Python." "No, math first." "Just do Kaggle." You waste months going in circles.</div></div>
+    <div class="pain-card fade-in"><div class="pain-icon">🔇</div><div class="pain-title" id="p2t">No feedback on your code</div><div class="pain-text" id="p2d">You write code, it works (maybe), but nobody tells you it's wrong architecture, poor practices, or that you're solving the wrong problem.</div></div>
+    <div class="pain-card fade-in"><div class="pain-icon">😰</div><div class="pain-title" id="p3t">Imposter syndrome kills progress</div><div class="pain-text" id="p3d">You don't know if you're ready for jobs. You don't know what level you're at. You just feel permanently stuck and not good enough.</div></div>
+    <div class="pain-card fade-in"><div class="pain-icon">💸</div><div class="pain-title" id="p4t">Bootcamps cost a fortune</div><div class="pain-text" id="p4d">$8,000–$15,000 for a bootcamp that gives you the same generic curriculum everyone else gets, with no personalization whatsoever.</div></div>
+    <div class="pain-card fade-in"><div class="pain-icon">📚</div><div class="pain-title" id="p5t">Too many resources, no direction</div><div class="pain-text" id="p5d">Coursera. Udemy. YouTube. Kaggle. Papers. Books. The abundance of content is itself the problem — you don't know what to study next.</div></div>
+    <div class="pain-card fade-in"><div class="pain-icon">🏝️</div><div class="pain-title" id="p6t">Learning alone is lonely</div><div class="pain-text" id="p6d">No community, no accountability partner, no one to celebrate wins with or help when you're stuck at 2am on a bug that's breaking you.</div></div>
+  </div>
+</div></div>
+
+<!-- FEATURES -->
+<div class="section-alt"><div class="section">
+  <div class="stag fade-in" id="tag2">— The Solution</div>
+  <h2 class="stitle fade-in" id="ftitle">Everything you need<br/><span style="color:var(--muted)">in one place.</span></h2>
+  <div class="feat-grid">
+    <div class="feat-card fade-in"><div class="feat-num">01 — DIAGNOSE</div><div class="feat-icon" style="background:var(--accent-l)">🎯</div><div class="feat-title" id="f1t">Instant Level Diagnosis</div><div class="feat-desc" id="f1d">Answer 20 adaptive questions. Get a precise map of your strengths, gaps, and the exact starting point for your journey.</div><span class="feat-tag" style="background:var(--accent-l);color:var(--accent)">ADAPTIVE AI</span></div>
+    <div class="feat-card fade-in"><div class="feat-num">02 — PLAN</div><div class="feat-icon" style="background:var(--green-l)">🗺️</div><div class="feat-title" id="f2t">Personalized Roadmap</div><div class="feat-desc" id="f2d">Your coach builds a week-by-week learning plan tailored to your goals, schedule, and current level. Adjusts in real time.</div><span class="feat-tag" style="background:var(--green-l);color:var(--green)">DYNAMIC</span></div>
+    <div class="feat-card fade-in"><div class="feat-num">03 — COACH</div><div class="feat-icon" style="background:var(--purple-l)">🤖</div><div class="feat-title" id="f3t">24/7 AI Coach</div><div class="feat-desc" id="f3d">Ask anything, anytime. Your coach explains concepts, debugs your thinking, and keeps you accountable — without judgment.</div><span class="feat-tag" style="background:var(--purple-l);color:var(--purple)">ALWAYS ON</span></div>
+    <div class="feat-card fade-in"><div class="feat-num">04 — REVIEW</div><div class="feat-icon" style="background:var(--orange-l)">🔍</div><div class="feat-title" id="f4t">Code & Project Review</div><div class="feat-desc" id="f4d">Submit your notebooks and projects. Get detailed, line-by-line feedback on architecture and what impresses recruiters.</div><span class="feat-tag" style="background:var(--orange-l);color:var(--orange)">DEEP FEEDBACK</span></div>
+    <div class="feat-card fade-in"><div class="feat-num">05 — TRACK</div><div class="feat-icon" style="background:var(--accent-l)">📈</div><div class="feat-title" id="f5t">Progress Tracking</div><div class="feat-desc" id="f5d">Visual dashboards show your skill growth over time. Weekly reports. Milestone celebrations. You always know where you stand.</div><span class="feat-tag" style="background:var(--accent-l);color:var(--accent)">METRICS</span></div>
+    <div class="feat-card fade-in"><div class="feat-num">06 — CONNECT</div><div class="feat-icon" style="background:var(--green-l)">👥</div><div class="feat-title" id="f6t">Student Community</div><div class="feat-desc" id="f6d">Study rooms, project collabs, code reviews from peers, weekly challenges. Learn alone but never feel alone.</div><span class="feat-tag" style="background:var(--green-l);color:var(--green)">COMMUNITY</span></div>
+  </div>
+</div></div>
+
+<!-- TERMINAL -->
+<div><div class="section">
+  <div class="stag fade-in" id="tag3">— See It In Action</div>
+  <h2 class="stitle fade-in" id="demotitle">Your coach, <span style="color:var(--muted)">live.</span></h2>
+  <div class="terminal fade-in">
+    <div class="t-bar">
+      <div class="t-dot2" style="background:#FF5F56"></div>
+      <div class="t-dot2" style="background:#FFBD2E"></div>
+      <div class="t-dot2" style="background:#27C93F"></div>
+      <span class="t-label">datacoach-ai — session #1</span>
+    </div>
+    <div class="t-body">
+      <div><span class="t-prompt">student@datacoach</span> <span class="t-cmd">~ start diagnosis</span></div>
+      <div class="t-out">→ Running adaptive assessment... <span class="t-acc">20 questions</span></div>
+      <div class="t-out">→ Analyzing skill vectors across 8 domains...</div>
+      <div class="t-out">→ <span class="t-acc">✓ Diagnosis complete</span></div>
+      <br/>
+      <div><span class="t-prompt">datacoach</span> <span class="t-cmd">~ show results</span></div>
+      <div class="t-out">┌─────────────────────────────────────┐</div>
+      <div class="t-out">│  Python        <span class="t-acc">████████░░</span>  <span class="t-acc">78%</span>  Strong  │</div>
+      <div class="t-out">│  Statistics    <span class="t-warn">█████░░░░░</span>  <span class="t-warn">52%</span>  Gap ⚠️ │</div>
+      <div class="t-out">│  ML Algorithms <span class="t-warn">████░░░░░░</span>  <span class="t-warn">44%</span>  Gap ⚠️ │</div>
+      <div class="t-out">│  Deep Learning <span class="t-purp">███░░░░░░░</span>  <span class="t-purp">31%</span>  Begin  │</div>
+      <div class="t-out">└─────────────────────────────────────┘</div>
+      <br/>
+      <div><span class="t-prompt">datacoach</span> <span class="t-cmd">~ generate roadmap --goal "ML Engineer"</span></div>
+      <div class="t-out">→ Week 1-3: <span class="t-acc">Statistics foundations</span> (critical gap)</div>
+      <div class="t-out">→ Week 4-7: <span class="t-acc">ML algorithms from scratch</span></div>
+      <div class="t-out">→ Week 8-12: <span class="t-purp">Deep Learning + PyTorch</span></div>
+      <div class="t-out">→ Week 13-16: <span class="t-warn">Portfolio + Job prep</span></div>
+      <div class="t-out">→ <span class="t-acc">✓ Roadmap ready. Day 1 starts now.</span><span class="t-cur"></span></div>
+    </div>
+  </div>
+</div></div>
+
+<!-- HOW -->
+<div class="section-alt"><div class="section">
+  <div class="stag fade-in" id="tag4">— How It Works</div>
+  <h2 class="stitle fade-in" style="margin-bottom:0" id="howtitle">From zero to <em style="font-family:'Lora',serif;color:var(--accent)">hired</em> in 4 steps.</h2>
+  <div class="steps">
+    <div class="step fade-in"><div class="step-num">01</div><div class="step-title" id="s1t">Get Diagnosed</div><div class="step-desc" id="s1d">Complete the 20-question adaptive assessment. Know exactly where you stand in 10 minutes.</div></div>
+    <div class="step fade-in"><div class="step-num" style="border-color:var(--green);color:var(--green);box-shadow:0 0 0 6px var(--green-l)">02</div><div class="step-title" id="s2t">Get Your Roadmap</div><div class="step-desc" id="s2d">Your AI coach generates a custom week-by-week plan tailored to your goals.</div></div>
+    <div class="step fade-in"><div class="step-num" style="border-color:var(--purple);color:var(--purple);box-shadow:0 0 0 6px var(--purple-l)">03</div><div class="step-title" id="s3t">Build Real Projects</div><div class="step-desc" id="s3d">Work on impactful projects with live code review, AI feedback, and community support.</div></div>
+    <div class="step fade-in"><div class="step-num" style="border-color:var(--orange);color:var(--orange);box-shadow:0 0 0 6px var(--orange-l)">04</div><div class="step-title" id="s4t">Land the Job</div><div class="step-desc" id="s4d">Interview prep, portfolio polish, and recruiter tips — all built into the final phase.</div></div>
+  </div>
+</div></div>
+
+<!-- PRICING -->
+<div><div class="section">
+  <div class="stag fade-in" id="tag5">— Pricing</div>
+  <h2 class="stitle fade-in" id="prictitle">Simple, <span style="color:var(--muted)">transparent pricing.</span></h2>
+  <div class="price-grid">
+    <div class="price-card fade-in">
+      <div class="p-name" id="pn1">Starter</div><div class="p-price" id="pp1">Free</div><div class="p-period" id="pper1">Forever free</div>
+      <ul class="p-feats">
+        <li><span class="chk">✓</span><span id="pf1_1">Level diagnosis</span></li>
+        <li><span class="chk">✓</span><span id="pf1_2">Basic roadmap</span></li>
+        <li><span class="chk">✓</span><span id="pf1_3">10 AI coach messages/month</span></li>
+        <li><span class="chk">✓</span><span id="pf1_4">Community access</span></li>
+        <li style="color:var(--muted2)"><span style="color:var(--muted2)">✗</span><span id="pf1_5">Code review</span></li>
+        <li style="color:var(--muted2)"><span style="color:var(--muted2)">✗</span><span id="pf1_6">Project feedback</span></li>
+      </ul>
+      <button class="p-btn p-btn-out" onclick="openModal()" id="pb1">Get Started Free</button>
+    </div>
+    <div class="price-card feat fade-in">
+      <div class="price-badge" id="pbadge">⭐ MOST POPULAR</div>
+      <div class="p-name" style="color:var(--accent)" id="pn2">Pro</div><div class="p-price" style="color:var(--accent)" id="pp2">€29</div><div class="p-period" id="pper2">per month · cancel anytime</div>
+      <ul class="p-feats">
+        <li><span class="chk">✓</span><span id="pf2_1">Everything in Starter</span></li>
+        <li><span class="chk">✓</span><span id="pf2_2">Unlimited AI coach</span></li>
+        <li><span class="chk">✓</span><span id="pf2_3">Full personalized roadmap</span></li>
+        <li><span class="chk">✓</span><span id="pf2_4">Unlimited code review</span></li>
+        <li><span class="chk">✓</span><span id="pf2_5">Project feedback</span></li>
+        <li><span class="chk">✓</span><span id="pf2_6">Progress tracking</span></li>
+      </ul>
+      <button class="p-btn p-btn-fill" onclick="openModal()" id="pb2">Join Waitlist →</button>
+    </div>
+    <div class="price-card fade-in">
+      <div class="p-name" id="pn3">Team</div><div class="p-price" id="pp3">€79</div><div class="p-period" id="pper3">per month · up to 5 students</div>
+      <ul class="p-feats">
+        <li><span class="chk">✓</span><span id="pf3_1">Everything in Pro</span></li>
+        <li><span class="chk">✓</span><span id="pf3_2">Group study rooms</span></li>
+        <li><span class="chk">✓</span><span id="pf3_3">Team progress dashboard</span></li>
+        <li><span class="chk">✓</span><span id="pf3_4">Collaborative projects</span></li>
+        <li><span class="chk">✓</span><span id="pf3_5">Priority support</span></li>
+        <li><span class="chk">✓</span><span id="pf3_6">Monthly live Q&A</span></li>
+      </ul>
+      <button class="p-btn p-btn-out" onclick="openModal()" id="pb3">Contact Us</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- CTA -->
+<div class="cta-wrap">
+  <h2 class="cta-title fade-in" id="ctatitle">Your data science<br/><span class="hero-italic" id="ctaitalic">career starts today.</span></h2>
+  <p class="cta-sub fade-in" id="ctasub">Join the waitlist. Get early access + 3 months free.</p>
+  <div class="cta-form fade-in">
+    <input class="cta-input" type="email" id="ctaEmail" placeholder="your@email.com"/>
+    <button class="cta-btn" id="ctabtn" onclick="quickJoinCta()">Join Now →</button>
+  </div>
+  <div class="cta-note fade-in" id="ctanote">No credit card · No spam · Cancel anytime</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-l" id="footl">© 2026 DataCoachAI · Built with ❤️ for data science students</div>
+  <div class="foot-links">
+    <a href="#" id="fa1">About</a><a href="#" id="fa2">Blog</a><a href="#" id="fa3">Careers</a>
+    <a href="#" id="fa4">Privacy</a><a href="#" id="fa5">Terms</a><a href="#" id="fa6">Contact</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CURSOR ──
+const cur=document.getElementById('cursor'),ring=document.getElementById('cring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function animR(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animR);})();
+document.querySelectorAll('button,a,input').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(2.5)';ring.style.width='56px';ring.style.height='56px';ring.style.opacity='0.5';});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';ring.style.width='32px';ring.style.height='32px';ring.style.opacity='1';});
+});
+
+// ── SCROLL ANIMATIONS ──
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
+// ── WAITLIST DATA ──
+const signups = []; // stores {email, name, timestamp, lang}
+
+// ── MODAL ──
+function openModal(){
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('modalForm').style.display='block';
+  document.getElementById('modalSuccess').style.display='none';
+  setTimeout(()=>document.getElementById('modalEmail').focus(),200);
+}
+function closeModalBtn(){ document.getElementById('modalOverlay').classList.remove('open'); }
+function closeModal(e){ if(e.target===document.getElementById('modalOverlay')) closeModalBtn(); }
+
+// ── QUICK JOIN (hero & cta) ──
+function quickJoin(){
+  const email=document.getElementById('heroEmail').value.trim();
+  if(!email||!email.includes('@')){
+    document.getElementById('heroEmail').style.borderColor='#E07B39';
+    setTimeout(()=>document.getElementById('heroEmail').style.borderColor='',1500);
+    return;
+  }
+  document.getElementById('modalEmail').value=email;
+  document.getElementById('heroEmail').value='';
+  openModal();
+}
+function quickJoinCta(){
+  const email=document.getElementById('ctaEmail').value.trim();
+  if(!email||!email.includes('@')){
+    document.getElementById('ctaEmail').style.borderColor='#E07B39';
+    setTimeout(()=>document.getElementById('ctaEmail').style.borderColor='',1500);
+    return;
+  }
+  document.getElementById('modalEmail').value=email;
+  document.getElementById('ctaEmail').value='';
+  openModal();
+}
+
+// ── SUBMIT WAITLIST ──
+function submitWaitlist(){
+  const email=document.getElementById('modalEmail').value.trim();
+  const name=document.getElementById('modalName').value.trim();
+  const t=translations[currentLang];
+
+  if(!email||!email.includes('@')){
+    document.getElementById('modalEmail').style.borderColor='#E07B39';
+    setTimeout(()=>document.getElementById('modalEmail').style.borderColor='',1500);
+    return;
+  }
+
+  // Save locally
+  const entry={email, name:name||'Friend', timestamp:new Date().toISOString(), lang:currentLang};
+  signups.push(entry);
+
+  // ── NOTIFICATION EMAIL via Formspree ──
+  // Replace YOUR_FORMSPREE_ID below with your actual Formspree form ID
+  // Get one free at formspree.io — it sends you an email for every signup
+  const FORMSPREE_ID = 'YOUR_FORMSPREE_ID';
+
+  const payload = {
+    email: email,
+    name: name || 'Anonymous',
+    _subject: `🎉 New DataCoach AI Signup — ${email}`,
+    _replyto: email,
+    message: `New waitlist signup!\n\nName: ${name||'Not provided'}\nEmail: ${email}\nLanguage: ${currentLang.toUpperCase()}\nTime: ${new Date().toLocaleString()}\nTotal signups: ${signups.length}`,
+  };
+
+  // Send to Formspree (owner notification + user confirmation)
+  if(FORMSPREE_ID !== 'YOUR_FORMSPREE_ID'){
+    fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify(payload)
+    }).catch(()=>{}); // silent fail — UX is not blocked
+  }
+
+  // ── Also log to Google Sheets via Apps Script ──
+  // Replace YOUR_APPS_SCRIPT_URL below with your deployed Google Apps Script URL
+  const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';
+  if(APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL'){
+    fetch(APPS_SCRIPT_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email, name:name||'', lang:currentLang, timestamp:entry.timestamp})
+    }).catch(()=>{});
+  }
+
+  // ── UPDATE UI ──
+  const total = 247 + signups.length;
+  document.getElementById('proofTxt').innerHTML = `${t.heroProofJoin} <strong style="color:var(--text)">${total} ${t.heroProofStudents}</strong> ${t.heroProof}`;
+
+  // Show success in modal
+  document.getElementById('modalForm').style.display='none';
+  document.getElementById('modalSuccess').style.display='block';
+  document.getElementById('successTitle').textContent = t.successTitle;
+  document.getElementById('successMsg').textContent = t.successMsg.replace('{email}', email);
+
+  // Auto close after 4s
+  setTimeout(closeModalBtn, 4000);
+
+  // Toast
+  showToast(`${t.toastMsg} #${total}`);
+}
+
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),4000);
+}
+
+// Enter key
+document.querySelectorAll('input[type=email]').forEach(i=>{
+  i.addEventListener('keydown',e=>{ if(e.key==='Enter'){ if(i.id==='heroEmail') quickJoin(); else if(i.id==='ctaEmail') quickJoinCta(); else if(i.id==='modalEmail') submitWaitlist(); } });
+});
+
+// ── LANG SLIDER INIT ──
+window.addEventListener('load',()=>{
+  const b=document.getElementById('btnEN'),s=document.getElementById('langSlider');
+  if(b&&s){s.style.width=b.offsetWidth+'px';}
+});
+
+// ── i18n ──
+let currentLang='en';
+const translations={
+  en:{
+    navCta:'Join Waitlist', navBadge:'BETA · COMING SOON',
+    eyebrow:'The AI Coach Built for Data Scientists',
+    heroLine1:'Learn Data Science', heroItalic:'10× Faster',
+    heroSub:'Your personal AI coach that diagnoses your level, builds your roadmap, reviews your code, and guides every project — available 24/7.',
+    heroCta:'Get Early Access →', heroProofJoin:'Join', heroProofStudents:'students', heroProof:'already on the waitlist',
+    s1l:'Faster skill acquisition vs solo learning', s2l:'AI coach available, no scheduling needed', s3l:'vs $10,000+ bootcamp fees', s4l:'Average time to job-ready level',
+    tag1:'— The Problem', ptitle1:'Learning data science alone', ptitle2:'is broken.',
+    p1t:'No clear roadmap', p1d:'Everyone tells you something different. "Start with Python." "No, math first." "Just do Kaggle." You waste months going in circles.',
+    p2t:'No feedback on your code', p2d:"You write code, it works (maybe), but nobody tells you it's wrong architecture, poor practices, or that you're solving the wrong problem.",
+    p3t:'Imposter syndrome kills progress', p3d:"You don't know if you're ready for jobs. You don't know what level you're at. You just feel permanently stuck.",
+    p4t:'Bootcamps cost a fortune', p4d:'$8,000–$15,000 for a bootcamp that gives you the same generic curriculum everyone else gets, with no personalization.',
+    p5t:'Too many resources, no direction', p5d:"Coursera. Udemy. YouTube. Kaggle. Papers. Books. The abundance of content is itself the problem — you don't know what to study next.",
+    p6t:'Learning alone is lonely', p6d:"No community, no accountability partner, no one to celebrate wins with or help when you're stuck at 2am on a bug.",
+    tag2:'— The Solution', ft1:'Everything you need', ft2:'in one place.',
+    f1t:'Instant Level Diagnosis', f1d:'Answer 20 adaptive questions. Get a precise map of your strengths, gaps, and the exact starting point for your journey.',
+    f2t:'Personalized Roadmap', f2d:'Your coach builds a week-by-week learning plan tailored to your goals, schedule, and current level. Adjusts in real time.',
+    f3t:'24/7 AI Coach', f3d:'Ask anything, anytime. Your coach explains concepts, debugs your thinking, and keeps you accountable — without judgment.',
+    f4t:'Code & Project Review', f4d:'Submit your notebooks and projects. Get detailed, line-by-line feedback on architecture and what impresses recruiters.',
+    f5t:'Progress Tracking', f5d:'Visual dashboards show your skill growth over time. Weekly reports. Milestone celebrations. You always know where you stand.',
+    f6t:'Student Community', f6d:'Study rooms, project collabs, code reviews from peers, weekly challenges. Learn alone but never feel alone.',
+    tag3:'— See It In Action', demoTitle:'Your coach,',
+    tag4:'— How It Works', howTitle:'From zero to',
+    s1t:'Get Diagnosed', s1d:'Complete the 20-question adaptive assessment. Know exactly where you stand in 10 minutes.',
+    s2t:'Get Your Roadmap', s2d:'Your AI coach generates a custom week-by-week plan tailored to your goals.',
+    s3t:'Build Real Projects', s3d:'Work on impactful projects with live code review, AI feedback, and community support.',
+    s4t:'Land the Job', s4d:'Interview prep, portfolio polish, and recruiter tips — all built into the final phase.',
+    tag5:'— Pricing', pricTitle:'Simple,',
+    pn1:'Starter', pp1:'Free', pper1:'Forever free',
+    pf1:['Level diagnosis','Basic roadmap','10 AI coach messages/month','Community access','Code review','Project feedback'], pb1:'Get Started Free',
+    pbadge:'⭐ MOST POPULAR', pn2:'Pro', pper2:'per month · cancel anytime',
+    pf2:['Everything in Starter','Unlimited AI coach','Full personalized roadmap','Unlimited code review','Project feedback','Progress tracking'], pb2:'Join Waitlist →',
+    pn3:'Team', pp3:'€79', pper3:'per month · up to 5 students',
+    pf3:['Everything in Pro','Group study rooms','Team progress dashboard','Collaborative projects','Priority support','Monthly live Q&A'], pb3:'Contact Us',
+    ctaLine1:'Your data science', ctaItalic:'career starts today.', ctaSub:'Join the waitlist. Get early access + 3 months free.',
+    ctaBtn:'Join Now →', ctaNote:'No credit card · No spam · Cancel anytime',
+    footl:'© 2026 DataCoachAI · Built with ❤️ for data science students',
+    fa:['About','Blog','Careers','Privacy','Terms','Contact'],
+    modalTitle:'Get notified when we launch', modalDesc:'Enter your email and we'll send you a confirmation right away — plus an alert the day we go live.',
+    modalBtn:'Notify Me on Launch →', modalNote:'No spam · Unsubscribe anytime · We respect your privacy',
+    successTitle:"You're on the list!", successMsg:"Check your inbox — a confirmation email is on its way. We'll ping you the moment DataCoach AI goes live.",
+    toastMsg:'🎉 Welcome aboard! You are',
+    emailPh:'your@email.com', namePh:'Your first name (optional)',
+  },
+  fr:{
+    navCta:'Rejoindre la liste', navBadge:'BÊTA · BIENTÔT',
+    eyebrow:'Le Coach IA pour les Data Scientists',
+    heroLine1:'Apprends la Data Science', heroItalic:'10× Plus Vite',
+    heroSub:'Ton coach IA personnel qui diagnostique ton niveau, construit ta roadmap, corrige ton code et guide chaque projet — disponible 24h/24.',
+    heroCta:'Accès Anticipé →', heroProofJoin:'Rejoins', heroProofStudents:'étudiants', heroProof:"déjà sur la liste d'attente",
+    s1l:"Acquisition de compétences plus rapide vs l'apprentissage solo", s2l:'Coach IA disponible, sans prise de RDV', s3l:'vs 10 000€+ de frais de bootcamp', s4l:"Durée moyenne pour être prêt à l'emploi",
+    tag1:'— Le Problème', ptitle1:'Apprendre la data science seul', ptitle2:"c'est cassé.",
+    p1t:'Aucune roadmap claire', p1d:'Tout le monde te dit quelque chose de différent. "Commence par Python." "Non, les maths." "Fais Kaggle." Tu perds des mois à tourner en rond.',
+    p2t:'Aucun retour sur ton code', p2d:"Tu écris du code, ça marche (peut-être), mais personne ne te dit que l'architecture est mauvaise ou que tu résous le mauvais problème.",
+    p3t:"Le syndrome de l'imposteur bloque", p3d:"Tu ne sais pas si tu es prêt pour un emploi. Tu ne sais pas à quel niveau tu es. Tu te sens juste bloqué en permanence.",
+    p4t:'Les bootcamps coûtent une fortune', p4d:'8 000–15 000€ pour un bootcamp qui te donne le même programme générique que tout le monde, sans aucune personnalisation.',
+    p5t:'Trop de ressources, pas de direction', p5d:"Coursera. Udemy. YouTube. Kaggle. L'abondance de contenu est elle-même le problème — tu ne sais pas quoi étudier ensuite.",
+    p6t:'Apprendre seul est solitaire', p6d:"Pas de communauté, pas de partenaire de responsabilité, personne pour t'aider quand tu es bloqué à 2h du matin.",
+    tag2:'— La Solution', ft1:'Tout ce dont tu as besoin', ft2:'au même endroit.',
+    f1t:'Diagnostic de Niveau Instantané', f1d:"Réponds à 20 questions adaptatives. Obtiens une carte précise de tes forces et lacunes. Sans approximation.",
+    f2t:'Roadmap Personnalisée', f2d:"Ton coach construit un plan semaine par semaine adapté à tes objectifs et ton niveau. S'ajuste en temps réel.",
+    f3t:'Coach IA 24h/24', f3d:"Pose n'importe quelle question, à tout moment. Ton coach explique, débogue ta réflexion — sans jugement, sans attente.",
+    f4t:'Révision de Code & Projets', f4d:'Soumet tes notebooks. Obtiens un retour détaillé, ligne par ligne, sur ce qui impressionnera vraiment un recruteur.',
+    f5t:'Suivi de Progression', f5d:'Des tableaux de bord visuels montrent ta croissance. Rapports hebdomadaires. Tu sais toujours exactement où tu en es.',
+    f6t:"Communauté d'Étudiants", f6d:'Salles étude, collabs projets, révisions code entre pairs, défis hebdo. Apprends seul sans jamais te sentir seul.',
+    tag3:'— En Action', demoTitle:'Ton coach,',
+    tag4:'— Comment ça marche', howTitle:'De zéro à',
+    s1t:'Diagnostic', s1d:"Complète l'évaluation adaptative de 20 questions. Sais exactement où tu en es en 10 minutes.",
+    s2t:'Ta Roadmap', s2d:'Ton coach IA génère un plan semaine par semaine personnalisé selon tes objectifs.',
+    s3t:'Projets Réels', s3d:'Travaille sur des projets à fort impact avec révision de code en direct et soutien communautaire.',
+    s4t:'Décrocher le Job', s4d:'Préparation entretiens, polish portfolio, conseils recruteurs — tout intégré dans la phase finale.',
+    tag5:'— Tarifs', pricTitle:'Simple,',
+    pn1:'Starter', pp1:'Gratuit', pper1:'Toujours gratuit',
+    pf1:['Diagnostic de niveau','Roadmap basique','10 messages coach IA/mois','Accès communauté','Révision de code','Feedback projet'], pb1:'Commencer Gratuitement',
+    pbadge:'⭐ PLUS POPULAIRE', pn2:'Pro', pper2:'par mois · annulez quand vous voulez',
+    pf2:['Tout dans Starter','Coach IA illimité','Roadmap entièrement personnalisée','Révision de code illimitée','Feedback projet','Suivi de progression'], pb2:'Rejoindre la Liste →',
+    pn3:'Équipe', pp3:'€79', pper3:"par mois · jusqu'à 5 étudiants",
+    pf3:['Tout dans Pro',"Salles d'étude en groupe",'Tableau de bord équipe','Projets collaboratifs','Support prioritaire','Q&R mensuel en direct'], pb3:'Nous Contacter',
+    ctaLine1:'Ta carrière en data science', ctaItalic:"commence aujourd'hui.", ctaSub:"Rejoins la liste. Accès anticipé + 3 mois offerts.",
+    ctaBtn:'Rejoindre →', ctaNote:'Sans carte bleue · Sans spam · Annulation libre',
+    footl:'© 2026 DataCoachAI · Fait avec ❤️ pour les étudiants en data science',
+    fa:['À propos','Blog','Carrières','Confidentialité','CGU','Contact'],
+    modalTitle:'Sois notifié au lancement', modalDesc:"Entre ton email et on t'envoie une confirmation immédiatement — plus une alerte le jour où on lance.",
+    modalBtn:'Me Notifier au Lancement →', modalNote:'Sans spam · Désabonnement libre · Vie privée respectée',
+    successTitle:"Tu es sur la liste !", successMsg:"Vérifie ta boîte mail — une confirmation est en route. On te ping dès que DataCoach AI est en ligne.",
+    toastMsg:'🎉 Bienvenue ! Tu es',
+    emailPh:'ton@email.com', namePh:'Ton prénom (optionnel)',
+  }
+};
+
+function setLang(lang){
+  currentLang=lang;
+  const t=translations[lang], isEN=lang==='en';
+  const btnEN=document.getElementById('btnEN'), btnFR=document.getElementById('btnFR'), slider=document.getElementById('langSlider');
+  slider.style.width=(isEN?btnEN:btnFR).offsetWidth+'px';
+  slider.style.transform=isEN?'translateX(0)':`translateX(${btnEN.offsetWidth+2}px)`;
+  btnEN.classList.toggle('active',isEN); btnFR.classList.toggle('active',!isEN);
+  document.documentElement.lang=lang;
+
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  const setHTML=(id,val)=>{const el=document.getElementById(id);if(el)el.innerHTML=val;};
+  const setAttr=(id,attr,val)=>{const el=document.getElementById(id);if(el)el[attr]=val;};
+
+  set('navCta',t.navCta); set('navBadge',t.navBadge);
+  set('eyebrowTxt',t.eyebrow);
+  setHTML('heroTitle',`${t.heroLine1}<br/><span class="hero-italic" id="heroItalic">${t.heroItalic}</span>`);
+  set('heroSub',t.heroSub); set('heroBtnEl',t.heroCta);
+  document.querySelectorAll('input[type=email]').forEach(i=>i.placeholder=t.emailPh);
+  document.querySelectorAll('input[type=text]').forEach(i=>i.placeholder=t.namePh);
+  const total=247+signups.length;
+  setHTML('proofTxt',`${t.heroProofJoin} <strong style="color:var(--text)">${total} ${t.heroProofStudents}</strong> ${t.heroProof}`);
+  set('s1l',t.s1l); set('s2l',t.s2l); set('s3l',t.s3l); set('s4l',t.s4l);
+  set('tag1',t.tag1);
+  setHTML('ptitle',`${t.ptitle1}<br/><span style="color:var(--muted)">${t.ptitle2}</span>`);
+  ['1','2','3','4','5','6'].forEach(i=>{set('p'+i+'t',t['p'+i+'t']);set('p'+i+'d',t['p'+i+'d']);});
+  set('tag2',t.tag2);
+  setHTML('ftitle',`${t.ft1}<br/><span style="color:var(--muted)">${t.ft2}</span>`);
+  ['1','2','3','4','5','6'].forEach(i=>{set('f'+i+'t',t['f'+i+'t']);set('f'+i+'d',t['f'+i+'d']);});
+  set('tag3',t.tag3);
+  setHTML('demotitle',`${t.demoTitle} <span style="color:var(--muted)">live.</span>`);
+  set('tag4',t.tag4);
+  setHTML('howtitle',`${t.howTitle} <em style="font-family:'Lora',serif;color:var(--accent)">${isEN?'hired':'embauché'}</em> ${isEN?'in 4 steps.','en 4 étapes.'}`);
+  ['1','2','3','4'].forEach(i=>{set('s'+i+'t',t['s'+i+'t']);set('s'+i+'d',t['s'+i+'d']);});
+  set('tag5',t.tag5);
+  setHTML('prictitle',`${t.pricTitle} <span style="color:var(--muted)">${isEN?'transparent pricing.','tarification transparente.'}</span>`);
+  set('pn1',t.pn1); set('pp1',t.pp1); set('pper1',t.pper1);
+  set('pn2',t.pn2); set('pper2',t.pper2);
+  set('pn3',t.pn3); set('pp3',t.pp3); set('pper3',t.pper3);
+  set('pbadge',t.pbadge); set('pb1',t.pb1); set('pb2',t.pb2); set('pb3',t.pb3);
+  [1,2,3].forEach(p=>{[1,2,3,4,5,6].forEach(f=>{set(`pf${p}_${f}`,t[`pf${p}`][f-1]);});});
+  setHTML('ctatitle',`${t.ctaLine1}<br/><span class="hero-italic">${t.ctaItalic}</span>`);
+  set('ctasub',t.ctaSub); set('ctabtn',t.ctaBtn); set('ctanote',t.ctaNote);
+  set('footl',t.footl);
+  ['1','2','3','4','5','6'].forEach((i,idx)=>set('fa'+i,t.fa[idx]));
+  set('modalTitle',t.modalTitle); set('modalDesc',t.modalDesc);
+  set('modalBtn',t.modalBtn); set('modalNote',t.modalNote);
+}
+</script>
+</body>
+</html>
