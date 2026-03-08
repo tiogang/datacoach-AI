@@ -735,10 +735,10 @@ function setLang(lang){
   set('tag3',t.tag3);
   setHTML('demotitle',`${t.demoTitle} <span style="color:var(--muted)">live.</span>`);
   set('tag4',t.tag4);
-  setHTML('howtitle',`${t.howTitle} <em style="font-family:'Lora',serif;color:var(--accent)">${isEN?'hired':'embauché'}</em> ${isEN?'in 4 steps.','en 4 étapes.'}`);
+  setHTML('howtitle',`${t.howTitle} <em style="font-family:'Lora',serif;color:var(--accent)">${isEN?'hired':'embauché'}</em> ${isEN?'in 4 steps.':'en 4 étapes.'}`);
   ['1','2','3','4'].forEach(i=>{set('s'+i+'t',t['s'+i+'t']);set('s'+i+'d',t['s'+i+'d']);});
   set('tag5',t.tag5);
-  setHTML('prictitle',`${t.pricTitle} <span style="color:var(--muted)">${isEN?'transparent pricing.','tarification transparente.'}</span>`);
+  setHTML('prictitle',`${t.pricTitle} <span style="color:var(--muted)">${isEN?'transparent pricing.':'tarification transparente.'}</span>`);
   set('pn1',t.pn1); set('pp1',t.pp1); set('pper1',t.pper1);
   set('pn2',t.pn2); set('pper2',t.pper2);
   set('pn3',t.pn3); set('pp3',t.pp3); set('pper3',t.pper3);
